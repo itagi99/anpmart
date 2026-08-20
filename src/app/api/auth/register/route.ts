@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { dbInsert } from '@/lib/db'
+import { dbQuery, dbInsert } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name, email, and password are required' }, { status: 400 })
     }
 
-    const existingUsers = await dbInsert('SELECT id FROM users WHERE email = ?', [email])
+    const existingUsers = await dbQuery('SELECT id FROM users WHERE email = ?', [email])
     if (existingUsers && existingUsers.length > 0) {
       return NextResponse.json({ error: 'Email already registered' }, { status: 409 })
     }

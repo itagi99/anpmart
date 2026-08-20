@@ -31,9 +31,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const session = await createSession(user.id, user.role)
+    const token = await createSession({ userId: user.id, role: user.role, name: user.name || user.username })
     const response = NextResponse.json({ success: true, role: user.role })
-    await setSessionCookie(session, response)
+    const cookieHeaders = setSessionCookie(token)
+    response.headers.set('Set-Cookie', cookieHeaders['Set-Cookie'])
 
     return response
   } catch (error) {
