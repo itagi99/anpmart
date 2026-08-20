@@ -43,7 +43,7 @@ export default async function ProfilePage() {
             </div>
             <div>
               <p className="font-semibold text-gray-900 text-lg">{session.name}</p>
-              <p className="text-sm text-gray-500">{session.email || session.phone}</p>
+              <p className="text-sm text-gray-500">Customer account</p>
             </div>
           </div>
         </div>
