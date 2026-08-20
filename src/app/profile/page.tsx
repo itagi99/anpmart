@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import { User, Package, LogOut, LogIn } from 'lucide-react';
 import Link from 'next/link';
 

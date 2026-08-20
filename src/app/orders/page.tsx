@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import { dbQuery } from '@/lib/db';
 import { getSession } from '@/lib/auth';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import { formatPrice } from '@/lib/utils';
 import { Package, Clock, CheckCircle, XCircle } from 'lucide-react';
 

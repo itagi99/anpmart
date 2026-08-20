@@ -30,7 +30,7 @@ const navLinks = [
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const session = await getSession();
-  if (!session || session.user?.role !== 'admin') {
+  if (!session || session.role !== 'admin') {
     redirect('/admin/login');
   }
 

@@ -1,8 +1,8 @@
 import { dbQuery } from '@/lib/db';
 import { Product, Category } from '@/lib/types';
-import ProductCard from '@/components/product-card';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { ProductCard } from '@/components/product-card';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import { ChevronLeft } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';

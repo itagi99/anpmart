@@ -2,9 +2,9 @@
 
 import { useCart } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
-import CartItemRow from '@/components/cart-item';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { CartItemRow } from '@/components/cart-item';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 

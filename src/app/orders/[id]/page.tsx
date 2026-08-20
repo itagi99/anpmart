@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation';
 import { dbQuery } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { formatPrice } from '@/lib/utils';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import { ArrowLeft, Package } from 'lucide-react';
 import Link from 'next/link';
 

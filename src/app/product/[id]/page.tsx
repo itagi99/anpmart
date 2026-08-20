@@ -1,8 +1,8 @@
 import { dbQuery } from '@/lib/db';
 import { Product } from '@/lib/types';
 import { imageSrc, formatPrice } from '@/lib/utils';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import AddToCartButton from './add-to-cart-button';
 import { ChevronLeft, Star, BadgePercent } from 'lucide-react';
 

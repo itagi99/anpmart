@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/store/cart';
 import { formatPrice } from '@/lib/utils';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import { ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 

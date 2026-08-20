@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Search as SearchIcon, X, Loader2 } from 'lucide-react';
-import ProductCard from '@/components/product-card';
-import Header from '@/components/header';
-import BottomNav from '@/components/bottom-nav';
+import { ProductCard } from '@/components/product-card';
+import { Header } from '@/components/header';
+import { BottomNav } from '@/components/bottom-nav';
 import { Product } from '@/lib/types';
 
 export default function SearchPage() {
