@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --pri: #16a34a; --pri-dk: #0c831f; --pri-lt: #dcfce7; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 0; height: 0; }
