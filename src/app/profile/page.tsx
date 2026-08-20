@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
+import { dbQuery } from '@/lib/db';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { User, Package, LogOut, LogIn } from 'lucide-react';
@@ -30,6 +31,9 @@ export default async function ProfilePage() {
     );
   }
 
+  const rows = await dbQuery('SELECT name, email, phone FROM users WHERE id = ?', [session.userId]);
+  const user = rows[0];
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Header />
@@ -42,8 +46,8 @@ export default async function ProfilePage() {
               <User className="w-8 h-8 text-emerald-600" />
             </div>
             <div>
-              <p className="font-semibold text-gray-900 text-lg">{session.name}</p>
-              <p className="text-sm text-gray-500">{session.email || session.phone}</p>
+              <p className="font-semibold text-gray-900 text-lg">{user?.name || session.name}</p>
+              <p className="text-sm text-gray-500">{user?.email || user?.phone || ''}</p>
             </div>
           </div>
         </div>
