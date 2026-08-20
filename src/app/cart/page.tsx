@@ -45,7 +45,7 @@ export default function CartPage() {
             <div className="bg-white rounded-2xl p-4 shadow-sm">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-gray-600 font-medium">Subtotal</span>
-                <span className="text-xl font-bold text-gray-900">{formatPrice(total)}</span>
+                <span className="text-xl font-bold text-gray-900">{formatPrice(total())}</span>
               </div>
               <Link
                 href="/checkout"
