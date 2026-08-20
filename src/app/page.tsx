@@ -1,10 +1,11 @@
 import { dbQuery } from '@/lib/db';
 import { Product, Category, Banner } from '@/lib/types';
-import { imageSrc, formatPrice } from '@/lib/utils';
+import { imageSrc } from '@/lib/utils';
 import { ProductCard } from '@/components/product-card';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
-import { Star, Flame, Trophy, ShoppingCart, ChevronRight } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
+import ProductTabs from '@/components/product-tabs';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,40 +79,6 @@ function CategoryScroll({ categories }: { categories: Category[] }) {
   );
 }
 
-function ProductScrollSection({
-  title,
-  icon,
-  products,
-  viewAllLink,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  products: Product[];
-  viewAllLink: string;
-}) {
-  if (products.length === 0) return null;
-  return (
-    <section className="mb-6">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          {icon}
-          <h2 className="text-lg font-bold text-gray-900">{title}</h2>
-        </div>
-        <a href={viewAllLink} className="flex items-center text-sm text-emerald-600 font-medium">
-          View All <ChevronRight className="w-4 h-4" />
-        </a>
-      </div>
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-        {products.map((p) => (
-          <div key={p.id} className="min-w-[160px] max-w-[160px]">
-            <ProductCard product={p} />
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good Morning';
@@ -143,41 +110,17 @@ export default async function HomePage() {
 
         <CategoryScroll categories={categories} />
 
-        <ProductScrollSection
-          title="Deal of the Day"
-          icon={<Flame className="w-5 h-5 text-red-500" />}
-          products={dealOfDay}
-          viewAllLink="/category/all"
-        />
-
-        <ProductScrollSection
-          title="Best Sellers"
-          icon={<Trophy className="w-5 h-5 text-amber-500" />}
-          products={bestSellers}
-          viewAllLink="/category/all"
-        />
-
-        <ProductScrollSection
-          title="Product of the Week"
-          icon={<Star className="w-5 h-5 text-blue-500" />}
-          products={productOfWeek}
-          viewAllLink="/category/all"
-        />
-
-        <ProductScrollSection
-          title="Must Buy"
-          icon={<ShoppingCart className="w-5 h-5 text-emerald-500" />}
-          products={mustBuy}
-          viewAllLink="/category/all"
-        />
-
         <section>
-          <h2 className="text-lg font-bold text-gray-900 mb-3">All Products</h2>
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-            {allProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">Shop</h2>
+          <ProductTabs
+            tabs={[
+              { key: 'all', label: 'All Products', products: allProducts },
+              { key: 'deal', label: '🔥 Deal of the Day', products: dealOfDay },
+              { key: 'best', label: '🏆 Best Sellers', products: bestSellers },
+              { key: 'week', label: '⭐ Product of the Week', products: productOfWeek },
+              { key: 'must', label: '🛒 Must Buy', products: mustBuy },
+            ]}
+          />
         </section>
       </main>
 
