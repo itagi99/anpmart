@@ -9,11 +9,17 @@ export default function AddToCartButton({ product }: { product: Product }) {
   const { addItem, items, updateQuantity, removeItem } = useCart();
   const [added, setAdded] = useState(false);
 
-  const cartItem = items.find((i) => i.id === product.id);
+  const cartItem = items.find((i) => i.productId === product.id);
   const quantity = cartItem?.quantity || 0;
 
   const handleAdd = () => {
-    addItem(product);
+    addItem({
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image_path,
+      unit: product.unit_name,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
