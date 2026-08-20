@@ -10,7 +10,7 @@ function getClient(): Client | null {
 
   client = createClient({
     url,
-    authToken: process.env.TURSO_AUTH_TOKEN?.trim(),
+    authToken: (process.env.TURSO_DATABASE_TOKEN ?? process.env.TURSO_AUTH_TOKEN)?.trim(),
   });
   return client;
 }
