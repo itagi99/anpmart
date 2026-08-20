@@ -7,9 +7,9 @@ const client = createClient({
 
 export default client;
 
-export async function dbQuery(sql: string, args: any[] = []) {
+export async function dbQuery<T = Record<string, unknown>>(sql: string, args: any[] = []): Promise<T[]> {
   const result = await client.execute({ sql, args });
-  return result.rows;
+  return result.rows as T[];
 }
 
 export async function dbExecute(sql: string, args: any[] = []) {
