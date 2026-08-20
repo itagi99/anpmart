@@ -1,7 +1,6 @@
 'use client';
 import { useCart, CartItem } from '@/store/cart';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import Image from 'next/image';
 import { imageSrc, formatPrice } from '@/lib/utils';
 
 interface Props {
