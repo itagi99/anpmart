@@ -1,8 +1,12 @@
 import { createClient } from '@libsql/client';
 
+const databaseUrl =
+  process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL || 'file:./anpmart.db';
+const authToken = process.env.TURSO_AUTH_TOKEN || process.env.TURSO_DATABASE_TOKEN;
+
 const client = createClient({
-  url: process.env.TURSO_DATABASE_URL || '',
-  authToken: process.env.TURSO_AUTH_TOKEN || '',
+  url: databaseUrl,
+  ...(authToken ? { authToken } : {}),
 });
 
 export default client;
