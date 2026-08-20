@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       [min_amount || 0, max_amount || null, charge, area || null]
     )
 
-    return NextResponse.json({ success: true, ruleId: result?.lastInsertRowid })
+    return NextResponse.json({ success: true, ruleId: result })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

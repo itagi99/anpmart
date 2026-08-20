@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       [code, discount_type || 'fixed', discount_value, min_order || 0, max_uses || null, expires_at || null, active !== undefined ? active : 1]
     )
 
-    return NextResponse.json({ success: true, couponId: result?.lastInsertRowid })
+    return NextResponse.json({ success: true, couponId: result })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

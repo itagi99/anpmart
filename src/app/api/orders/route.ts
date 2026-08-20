@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       [session.userId, name, phone, address, total, 0, 'pending', payment_method || 'cod']
     )
 
-    const orderId = orderResult?.lastInsertRowid
+    const orderId = orderResult
 
     for (const item of items) {
       await dbInsert(

@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       [name, email, phone || null, password, 'user']
     )
 
-    return NextResponse.json({ success: true, userId: result?.lastInsertRowid })
+    return NextResponse.json({ success: true, userId: result })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

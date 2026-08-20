@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       [title, image_url, link_url || null, active !== undefined ? active : 1]
     )
 
-    return NextResponse.json({ success: true, bannerId: result?.lastInsertRowid })
+    return NextResponse.json({ success: true, bannerId: result })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       [name, description || null, image_url || null]
     )
 
-    return NextResponse.json({ success: true, categoryId: result?.lastInsertRowid })
+    return NextResponse.json({ success: true, categoryId: result })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
