@@ -89,7 +89,7 @@ export default function CheckoutPage() {
         <div className="bg-white rounded-2xl p-4 shadow-sm mb-4">
           <h2 className="font-semibold text-gray-900 mb-3">Order Summary</h2>
           {items.map((item) => (
-            <div key={item.id} className="flex justify-between py-2 border-b last:border-b-0 text-sm">
+            <div key={item.productId} className="flex justify-between py-2 border-b last:border-b-0 text-sm">
               <span className="text-gray-600">
                 {item.name} × {item.quantity}
               </span>
