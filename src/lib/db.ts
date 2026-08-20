@@ -7,7 +7,7 @@ const client = createClient({
 
 export default client;
 
-export async function dbQuery<T = Record<string, unknown>>(sql: string, args: any[] = []): Promise<T[]> {
+export async function dbQuery<T = any>(sql: string, args: any[] = []): Promise<T[]> {
   const result = await client.execute({ sql, args });
   return result.rows as T[];
 }
