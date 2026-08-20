@@ -8,7 +8,7 @@ import { ShoppingCart } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 async function getCategories(): Promise<Category[]> {
-  return dbQuery<Category[]>("SELECT * FROM categories ORDER BY name ASC");
+  return dbQuery<Category>("SELECT * FROM categories ORDER BY name ASC");
 }
 
 export default async function CategoriesPage() {

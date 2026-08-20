@@ -9,11 +9,11 @@ import { Star, Flame, Trophy, ShoppingCart, ChevronRight } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 async function getCategories(): Promise<Category[]> {
-  return dbQuery<Category[]>("SELECT * FROM categories ORDER BY name ASC");
+  return dbQuery<Category>("SELECT * FROM categories ORDER BY name ASC");
 }
 
 async function getProducts(): Promise<Product[]> {
-  return dbQuery<Product[]>(
+  return dbQuery<Product>(
     `SELECT p.id, p.name, p.price, p.mrp, p.image_path, p.brand, p.description,
      p.is_best_seller, p.is_product_of_week, p.is_must_buy, p.is_deal_of_day,
      p.visible, p.category_id, u1.name AS unit_name
@@ -25,7 +25,7 @@ async function getProducts(): Promise<Product[]> {
 }
 
 async function getBanners(): Promise<Banner[]> {
-  return dbQuery<Banner[]>(
+  return dbQuery<Banner>(
     "SELECT * FROM banners WHERE active = 1 ORDER BY created_at DESC LIMIT 10"
   );
 }

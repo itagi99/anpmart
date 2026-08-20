@@ -9,7 +9,7 @@ import { ChevronLeft, Star, BadgePercent } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 async function getProduct(id: string): Promise<Product | null> {
-  const rows = await dbQuery<Product[]>(
+  const rows = await dbQuery<Product>(
     `SELECT p.id, p.name, p.price, p.mrp, p.image_path, p.brand, p.description,
      p.is_best_seller, p.is_product_of_week, p.is_must_buy, p.is_deal_of_day,
      p.visible, p.category_id, u1.name AS unit_name

@@ -29,7 +29,7 @@ interface Order {
 }
 
 async function getOrder(orderId: string, userId: number): Promise<Order | null> {
-  const rows = await dbQuery<Order[]>(
+  const rows = await dbQuery<Order>(
     'SELECT * FROM orders WHERE id = ? AND user_id = ?',
     [orderId, userId]
   );
@@ -37,7 +37,7 @@ async function getOrder(orderId: string, userId: number): Promise<Order | null> 
 }
 
 async function getOrderItems(orderId: string): Promise<OrderItem[]> {
-  return dbQuery<OrderItem[]>(
+  return dbQuery<OrderItem>(
     `SELECT oi.id, p.name AS product_name, oi.quantity, oi.price, p.image_path
      FROM order_items oi
      LEFT JOIN products p ON oi.product_id = p.id

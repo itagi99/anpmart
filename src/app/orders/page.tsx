@@ -17,7 +17,7 @@ interface Order {
 }
 
 async function getOrders(userId: number): Promise<Order[]> {
-  return dbQuery<Order[]>(
+  return dbQuery<Order>(
     'SELECT id, created_at, total, status, payment_method FROM orders WHERE user_id = ? ORDER BY created_at DESC',
     [userId]
   );
