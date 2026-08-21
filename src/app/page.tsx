@@ -6,7 +6,6 @@ import BottomNav from '@/components/BottomNav';
 import CategoryScroll from '@/components/CategoryScroll';
 import BannerCarousel from '@/components/BannerCarousel';
 import FlashDealsTicker from '@/components/FlashDealsTicker';
-import ProductTabs from '@/components/ProductTabs';
 import ProductCard from '@/components/ProductCard';
 import { Flame, Trophy, Star, ShoppingBag } from 'lucide-react';
 
@@ -83,16 +82,60 @@ export default async function HomePage() {
 
           <CategoryScroll categories={categories} />
 
-          <ProductTabs
-            tabs={[
-              { key: 'all', label: 'All Products', products: allProducts },
-              { key: 'deal', label: '⚡ Flash Deals', products: products.filter(p => p.is_deal_of_day === 1) },
-              { key: 'day', label: '🌟 Deal of the Day', products: products.filter(p => p.is_deal_of_day === 1) },
-              { key: 'best', label: '🔥 Best Sellers', products: products.filter(p => p.is_best_seller === 1) },
-              { key: 'week', label: '📅 Product of the Week', products: products.filter(p => p.is_product_of_week === 1) },
-              { key: 'must', label: '✅ Must Buy', products: products.filter(p => p.is_must_buy === 1) },
-            ]}
-          />
+          <section className="px-2 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-black text-gray-900">⚡ Flash Deals</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {dealOfDay.map((p) => <ProductCard key={p.id} product={p} flashDeal={flashDeals[p.id]} />)}
+            </div>
+          </section>
+
+          <section className="px-2 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-black text-gray-900">🌟 Deal of the Day</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {dealOfDay.map((p) => <ProductCard key={p.id} product={p} flashDeal={flashDeals[p.id]} />)}
+            </div>
+          </section>
+
+          <section className="px-2 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-black text-gray-900">🔥 Best Sellers</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {bestSellers.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </section>
+
+          <section className="px-2 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-black text-gray-900">📅 Product of the Week</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {productOfWeek.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </section>
+
+          <section className="px-2 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-black text-gray-900">✅ Must Buy</h2>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {mustBuy.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </section>
+
+          <section className="px-2 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-black text-gray-900">All Products</h2>
+              <a href="/categories" className="text-xs text-emerald-600 font-bold">See All</a>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {allProducts.map((p) => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </section>
         </main>
 
         <BottomNav />

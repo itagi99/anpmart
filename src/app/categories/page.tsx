@@ -5,8 +5,6 @@ import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import CategoryScroll from '@/components/CategoryScroll';
 import ProductCard from '@/components/ProductCard';
-import ProductSection from '@/components/ProductSection';
-import { ShoppingCart, ChevronRight } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -63,10 +61,12 @@ export default async function CategoriesPage() {
         <Header />
         <main className="container-fluid p-0">
           <CategoryScroll categories={categories} />
-          <ProductSection
-            title="All Products"
-            products={products}
-          />
+          <div className="px-2">
+            <h2 className="text-sm font-black text-gray-900 mb-2">All Products</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {products.map((p) => <ProductCard key={p.id} product={p} flashDeal={flashDeals[p.id]} />)}
+            </div>
+          </div>
         </main>
         <BottomNav />
       </body>
