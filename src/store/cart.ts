@@ -73,6 +73,6 @@ export const useCart = create<CartStore>()(
       count: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
       getItem: (productId) => get().items.find((i) => i.productId === productId),
     }),
-    { name: 'anpmart-cart' }
+    { name: 'anpmart-cart', skipHydration: true }
   )
 );

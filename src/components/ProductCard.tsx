@@ -15,7 +15,7 @@ export default function ProductCard({ product, flashDeal }: Props) {
   const [quantity, setQuantity] = useState(() => getItem(product.id)?.quantity || 0);
   const inCart = quantity > 0;
 
-  const isFlash = flashDeal !== null;
+  const isFlash = !!flashDeal;
   const displayPrice = isFlash ? flashDeal.flash_price : (product.price > 0 ? product.price : product.mrp);
   const mrp = Number(product.mrp || 0);
   const hasDisc = isFlash ? mrp > displayPrice && displayPrice > 0 : (product.price > 0 && mrp > product.price);
