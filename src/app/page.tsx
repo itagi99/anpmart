@@ -1,130 +1,138 @@
 import { dbQuery } from '@/lib/db';
-import { Product, Category, Banner } from '@/lib/types';
+import { Product, Category, Banner } from '@/types';
 import { imageSrc } from '@/lib/utils';
-import { ProductCard } from '@/components/product-card';
-import { Header } from '@/components/header';
-import { BottomNav } from '@/components/bottom-nav';
-import { ShoppingCart } from 'lucide-react';
-import ProductTabs from '@/components/product-tabs';
+import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
+import CategoryScroll from '@/components/CategoryScroll';
+import BannerCarousel from '@/components/BannerCarousel';
+import FlashDealsTicker from '@/components/FlashDealsTicker';
+import ProductSection from '@/components/ProductSection';
+import ProductCard from '@/components/ProductCard';
+import { ShoppingCart, Flame, Trophy, Star, ShoppingBag } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 async function getCategories(): Promise<Category[]> {
-  return dbQuery<Category>("SELECT * FROM categories ORDER BY name ASC");
+  return dbQuery("SELECT * FROM categories ORDER BY name ASC");
 }
 
 async function getProducts(): Promise<Product[]> {
-  return dbQuery<Product>(
-    `SELECT p.id, p.name, p.price, p.mrp, p.image_path, p.brand, p.description,
-     p.is_best_seller, p.is_product_of_week, p.is_must_buy, p.is_deal_of_day,
-     p.visible, p.category_id, u1.name AS unit_name
-     FROM products p
-     LEFT JOIN units u1 ON p.primary_unit_id = u1.id
-     WHERE p.visible = 1
-     ORDER BY p.created_at DESC`
-  );
+  return dbQuery(`
+    SELECT p.*, u1.name AS unit_name, u2.name AS secondary_unit
+    FROM products p
+    LEFT JOIN units u1 ON p.primary_unit_id = u1.id
+    LEFT JOIN units u2 ON p.secondary_unit_id = u2.id
+    WHERE p.visible = 1
+    ORDER BY p.created_at DESC
+  `);
 }
 
 async function getBanners(): Promise<Banner[]> {
-  return dbQuery<Banner>(
-    "SELECT * FROM banners WHERE active = 1 ORDER BY created_at DESC LIMIT 10"
-  );
+  return dbQuery("SELECT * FROM banners WHERE active = 1 ORDER BY created_at DESC LIMIT 10");
 }
 
-function BannerCarousel({ banners }: { banners: Banner[] }) {
-  if (banners.length === 0) return null;
-  return (
-    <div className="relative w-full overflow-hidden rounded-lg">
-      <div className="flex animate-[scroll_20s_linear_infinite]">
-        {banners.map((b) => (
-          <div key={b.id} className="min-w-full">
-            <img
-              src={imageSrc(b.image_path)}
-              alt={b.title || 'Banner'}
-              className="w-full h-40 object-cover rounded-lg"
-            />
-          </div>
-        ))}
-      </div>
-      <style>{`
-        @keyframes scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
-    </div>
-  );
-}
-
-function CategoryScroll({ categories }: { categories: Category[] }) {
-  return (
-    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-      {categories.map((cat) => (
-        <a
-          key={cat.id}
-          href={`/category/${cat.id}`}
-          className="flex flex-col items-center min-w-[80px]"
-        >
-          <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-            {cat.image_path ? (
-              <img src={imageSrc(cat.image_path)} alt={cat.name} className="w-full h-full object-cover" />
-            ) : (
-              <ShoppingCart className="w-6 h-6 text-gray-400" />
-            )}
-          </div>
-          <span className="text-xs mt-1 text-center text-gray-700 whitespace-nowrap">{cat.name}</span>
-        </a>
-      ))}
-    </div>
-  );
-}
-
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good Morning';
-  if (hour < 17) return 'Good Afternoon';
-  return 'Good Evening';
+async function getFlashDeals(): Promise<Record<number, any>> {
+  const deals = await dbQuery(`
+    SELECT p.id, p.price AS flash_price, p.deal_start, p.deal_end
+    FROM products p
+    WHERE p.visible = 1 
+      AND p.is_deal_of_day = 1
+      AND (p.deal_start IS NULL OR p.deal_start <= datetime('now'))
+      AND (p.deal_end IS NULL OR p.deal_end >= datetime('now'))
+  `);
+  const map: Record<number, any> = {};
+  for (const d of deals) {
+    map[d.id] = { flash_price: d.flash_price, deal_start: d.deal_start, deal_end: d.deal_end };
+  }
+  return map;
 }
 
 export default async function HomePage() {
-  const [categories, products, banners] = await Promise.all([
+  const [categories, products, banners, flashDeals] = await Promise.all([
     getCategories(),
     getProducts(),
     getBanners(),
+    getFlashDeals(),
   ]);
 
-  const dealOfDay = products.filter((p) => p.is_deal_of_day === 1);
-  const bestSellers = products.filter((p) => p.is_best_seller === 1);
-  const productOfWeek = products.filter((p) => p.is_product_of_week === 1);
-  const mustBuy = products.filter((p) => p.is_must_buy === 1);
+  const dealOfDay = products.filter(p => p.is_deal_of_day === 1);
+  const bestSellers = products.filter(p => p.is_best_seller === 1);
+  const productOfWeek = products.filter(p => p.is_product_of_week === 1);
+  const mustBuy = products.filter(p => p.is_must_buy === 1);
   const allProducts = products.slice(0, 30);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <Header />
+    <html lang="en">
+      <head>
+        <title>ANP MART</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+        <meta name="theme-color" content="#0c831f" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon2.png" />
+        <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+      </head>
+      <body className="min-h-screen bg-gray-50 pb-20 font-mulish">
+        <Header />
 
-      <main className="max-w-7xl mx-auto px-4 py-4 space-y-6">
-        <p className="text-xl font-semibold text-gray-900">{getGreeting()} 👋</p>
+        <main className="container-fluid p-0">
+          <FlashDealsTicker />
 
-        <BannerCarousel banners={banners} />
+          <BannerCarousel banners={banners} />
 
-        <CategoryScroll categories={categories} />
+          <CategoryScroll categories={categories} />
 
-        <section>
-          <h2 className="text-lg font-bold text-gray-900 mb-3">Shop</h2>
-          <ProductTabs
-            tabs={[
-              { key: 'all', label: 'All Products', products: allProducts },
-              { key: 'deal', label: '🔥 Deal of the Day', products: dealOfDay },
-              { key: 'best', label: '🏆 Best Sellers', products: bestSellers },
-              { key: 'week', label: '⭐ Product of the Week', products: productOfWeek },
-              { key: 'must', label: '🛒 Must Buy', products: mustBuy },
-            ]}
+          <ProductSection
+            title="⚡ Flash Deals"
+            icon={<Flame className="w-5 h-5 text-red-500" />}
+            products={products.filter(p => p.is_deal_of_day === 1)}
+            viewAllLink="/categories"
           />
-        </section>
-      </main>
 
-      <BottomNav />
-    </div>
+          <ProductSection
+            title="🌟 Deal of the Day"
+            icon={<Star className="w-5 h-5 text-amber-500" />}
+            products={products.filter(p => p.is_deal_of_day === 1)}
+            viewAllLink="/categories"
+          />
+
+          <ProductSection
+            title="🔥 Best Sellers"
+            icon={<Trophy className="w-5 h-5 text-amber-500" />}
+            products={products.filter(p => p.is_best_seller === 1)}
+            viewAllLink="/categories"
+          />
+
+          <ProductSection
+            title="📅 Product of the Week"
+            icon={<Star className="w-5 h-5 text-blue-500" />}
+            products={products.filter(p => p.is_product_of_week === 1)}
+            viewAllLink="/categories"
+          />
+
+          <ProductSection
+            title="✅ Must Buy"
+            icon={<ShoppingBag className="w-5 h-5 text-emerald-500" />}
+            products={products.filter(p => p.is_must_buy === 1)}
+            viewAllLink="/categories"
+          />
+
+          <section className="px-4 mb-10">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-black text-gray-900">All Products</h2>
+              <a href="/categories" className="text-sm text-emerald-600 font-bold">See All</a>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {allProducts.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        </main>
+
+        <BottomNav />
+      </body>
+    </html>
   );
 }

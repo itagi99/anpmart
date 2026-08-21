@@ -1,48 +1,75 @@
 import { dbQuery } from '@/lib/db';
-import { Category } from '@/lib/types';
+import { Category } from '@/types';
 import { imageSrc } from '@/lib/utils';
-import { Header } from '@/components/header';
-import { BottomNav } from '@/components/bottom-nav';
-import { ShoppingCart } from 'lucide-react';
+import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
+import CategoryScroll from '@/components/CategoryScroll';
+import ProductCard from '@/components/ProductCard';
+import ProductSection from '@/components/ProductSection';
+import { ShoppingCart, ChevronRight } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 async function getCategories(): Promise<Category[]> {
-  return dbQuery<Category>("SELECT * FROM categories ORDER BY name ASC");
+  return dbQuery("SELECT * FROM categories ORDER BY name ASC");
+}
+
+async function getProducts(): Promise<any[]> {
+  return dbQuery(`
+    SELECT p.*, u1.name AS unit_name, u2.name AS secondary_unit
+    FROM products p
+    LEFT JOIN units u1 ON p.primary_unit_id = u1.id
+    LEFT JOIN units u2 ON p.secondary_unit_id = u2.id
+    WHERE p.visible = 1
+    ORDER BY p.created_at DESC
+  `);
+}
+
+async function getFlashDeals(): Promise<Record<number, any>> {
+  const deals = await dbQuery(`
+    SELECT p.id, p.price AS flash_price, p.deal_start, p.deal_end
+    FROM products p
+    WHERE p.visible = 1 
+      AND p.is_deal_of_day = 1
+      AND (p.deal_start IS NULL OR p.deal_start <= datetime('now'))
+      AND (p.deal_end IS NULL OR p.deal_end >= datetime('now'))
+  `);
+  const map: Record<number, any> = {};
+  for (const d of deals) {
+    map[d.id] = { flash_price: d.flash_price, deal_start: d.deal_start, deal_end: d.deal_end };
+  }
+  return map;
 }
 
 export default async function CategoriesPage() {
-  const categories = await getCategories();
+  const [categories, products, flashDeals] = await Promise.all([
+    getCategories(),
+    getProducts(),
+    getFlashDeals(),
+  ]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <Header />
-      <main className="max-w-7xl mx-auto px-4 py-4">
-        <h1 className="text-xl font-bold text-gray-900 mb-4">All Categories</h1>
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-          {categories.map((cat) => (
-            <a
-              key={cat.id}
-              href={`/category/${cat.id}`}
-              className="flex flex-col items-center p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
-            >
-              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden mb-2">
-                {cat.image_path ? (
-                  <img
-                    src={imageSrc(cat.image_path)}
-                    alt={cat.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <ShoppingCart className="w-7 h-7 text-gray-400" />
-                )}
-              </div>
-              <span className="text-sm font-medium text-gray-700 text-center">{cat.name}</span>
-            </a>
-          ))}
-        </div>
-      </main>
-      <BottomNav />
-    </div>
+    <html lang="en">
+      <head>
+        <title>Categories - ANP MART</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+        <meta name="theme-color" content="#0c831f" />
+        <link rel="manifest" href="/manifest.json" />
+        <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+      </head>
+      <body className="min-h-screen bg-gray-50 pb-20 font-mulish">
+        <Header />
+        <main className="container-fluid p-0">
+          <CategoryScroll categories={categories} />
+          <ProductSection
+            title="All Products"
+            products={products}
+          />
+        </main>
+        <BottomNav />
+      </body>
+    </html>
   );
 }

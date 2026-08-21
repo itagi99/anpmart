@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret-key-change-me');
+const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'anpmart-super-secret-jwt-key-2026-change-me');
 const COOKIE_NAME = 'anpmart_session';
 
 export interface Session {

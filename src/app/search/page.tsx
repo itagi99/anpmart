@@ -1,92 +1,139 @@
 'use client';
-
-import { useState, useEffect, useCallback } from 'react';
-import { Search as SearchIcon, X, Loader2 } from 'lucide-react';
-import { ProductCard } from '@/components/product-card';
-import { Header } from '@/components/header';
-import { BottomNav } from '@/components/bottom-nav';
-import { Product } from '@/lib/types';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { formatPrice, imageSrc } from '@/lib/utils';
+import { ArrowLeft, Search, X } from 'lucide-react';
+import Link from 'next/link';
+import ProductCard from '@/components/ProductCard';
+import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
 
 export default function SearchPage() {
+  const router = useRouter();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Product[]>([]);
+  const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
+  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
-  const doSearch = useCallback(async (q: string) => {
-    if (q.trim().length < 2) {
-      setResults([]);
-      setSearched(false);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      setResults(data.products || []);
-      setSearched(true);
-    } catch {
-      setResults([]);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q') || '';
+    if (q) {
+      setQuery(q);
+      searchProducts(q);
     }
   }, []);
 
-  useEffect(() => {
+  const searchProducts = (q: string) => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    if (q.length < 2) {
+      setResults([]);
+      return;
+    }
+    setLoading(true);
     const timer = setTimeout(() => {
-      doSearch(query);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [query, doSearch]);
+      fetch(`/api/search?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.results) setResults(data.results);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
+    }, 300);
+    setDebounceTimer(timer);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    searchProducts(value);
+  };
+
+  const handleClear = () => {
+    setQuery('');
+    setResults([]);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <Header />
-      <main className="max-w-3xl mx-auto px-4 py-4">
-        <div className="relative mb-4">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search products..."
-            className="w-full border border-gray-200 rounded-xl pl-11 pr-10 py-3 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            autoFocus
-          />
-          {query && (
-            <button
-              onClick={() => { setQuery(''); setResults([]); setSearched(false); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-            >
-              <X className="w-4 h-4 text-gray-400" />
-            </button>
-          )}
-        </div>
+    <html lang="en">
+      <head>
+        <title>Search - ANP MART</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+        <meta name="theme-color" content="#0c831f" />
+        <link rel="manifest" href="/manifest.json" />
+        <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+      </head>
+      <body className="min-h-screen bg-gray-50 pb-20 font-mulish">
+        <Header />
+        <main className="container-fluid p-4 pb-24">
+          <form onSubmit={handleSearch} className="relative mb-4">
+            <div className="flex items-center gap-2 bg-white/95 backdrop-blur rounded-xl shadow-lg p-1 px-3">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input
+                type="text"
+                placeholder="Search for groceries..."
+                className="flex-1 bg-transparent border-none outline-none text-sm font-bold text-gray-800 placeholder:text-gray-400"
+                value={query}
+                onChange={handleChange}
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="p-1 text-gray-400 hover:text-gray-600 rounded-full"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </form>
 
-        {loading ? (
-          <div className="flex justify-center py-10">
-            <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
+          {query && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-500">
+                {loading ? 'Searching...' : results.length === 0 ? `No results for "${query}"` : `Found ${results.length} results`}
+              </p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-3 gap-3">
+            {loading ? (
+              [...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-xl shadow-sm animate-pulse">
+                  <div className="aspect-square bg-gray-200" />
+                  <div className="p-2.5 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                  </div>
+                </div>
+              ))
+            ) : results.length === 0 ? (
+              <div className="col-span-3 flex flex-col items-center justify-center py-20 text-center">
+                <svg className="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <p className="text-lg font-semibold text-gray-500 mb-2">No products found</p>
+                <p className="text-sm text-gray-400">Try a different search term</p>
+              </div>
+            ) : (
+              results.map((p: any) => (
+                <Link key={p.id} href={`/product/${p.id}`}>
+                  <ProductCard product={p} />
+                </Link>
+              ))
+            )}
           </div>
-        ) : searched && results.length === 0 ? (
-          <div className="text-center py-16">
-            <SearchIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">No results for &quot;{query}&quot;</p>
-          </div>
-        ) : results.length > 0 ? (
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-            {results.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        ) : !searched ? (
-          <div className="text-center py-16">
-            <SearchIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">Search for products</p>
-          </div>
-        ) : null}
-      </main>
-      <BottomNav />
-    </div>
+        </main>
+        <BottomNav />
+      </body>
+    </html>
   );
 }
