@@ -1,20 +1,29 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/store/cart';
-import { Home, Grid, ShoppingBag, User, LogIn, UserCircle } from 'lucide-react';
-
-const navItems = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/categories', label: 'Categories', icon: Grid },
-  { href: '/cart', label: 'Cart', icon: ShoppingBag, showBadge: true },
-  { href: '/profile', label: 'Profile', icon: UserCircle, auth: true },
-];
+import { Home, Grid, ShoppingBag, UserCircle, LogIn, Package, User, Truck, Bell, CreditCard, Settings, LogOut } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
   const { count } = useCart();
   const cartCount = count();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(r => r.json())
+      .then(data => { setUser(data.user); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const navItems = [
+    { href: '/', label: 'Home', icon: Home },
+    { href: '/categories', label: 'Categories', icon: Grid },
+    { href: '/cart', label: 'Cart', icon: ShoppingBag, showBadge: true },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-lg z-50 rounded-t-2xl">
@@ -27,9 +36,7 @@ export default function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 w-1/4 transition-colors ${
-                isActive ? 'text-emerald-600' : 'text-gray-500'
-              }`}
+              className={`flex flex-col items-center gap-1 w-1/4 transition-colors ${isActive ? 'text-emerald-600' : 'text-gray-500'}`}
             >
               <Icon className={`w-6 h-6 transition-transform ${isActive ? '-translate-y-1' : ''}`} />
               <span className="text-[10px] font-bold">{item.label}</span>
@@ -41,6 +48,17 @@ export default function BottomNav() {
             </Link>
           );
         })}
+
+        {/* 4th item: Profile if logged in, Login if not */}
+        {!loading && (
+          <Link
+            href={user ? '/profile' : '/login'}
+            className={`flex flex-col items-center gap-1 w-1/4 transition-colors ${pathname === (user ? '/profile' : '/login') ? 'text-emerald-600' : 'text-gray-500'}`}
+          >
+            {user ? <UserCircle className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
+            <span className="text-[10px] font-bold">{user ? 'Profile' : 'Login'}</span>
+          </Link>
+        )}
       </div>
     </nav>
   );
