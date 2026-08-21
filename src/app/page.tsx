@@ -7,6 +7,7 @@ import CategoryScroll from '@/components/CategoryScroll';
 import BannerCarousel from '@/components/BannerCarousel';
 import FlashDealsTicker from '@/components/FlashDealsTicker';
 import ProductCard from '@/components/ProductCard';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import { Flame, Trophy, Star, ShoppingBag } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -139,6 +140,7 @@ export default async function HomePage() {
         </main>
 
         <BottomNav />
+        <PWAInstallPrompt />
       </body>
     </html>
   );

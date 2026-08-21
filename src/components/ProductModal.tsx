@@ -1,8 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { X, Minus, Plus, Tag, Trash2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { useCart } from '@/store/cart';
 import { imageSrc, formatPrice, getUnitConversion } from '@/lib/utils';
+import { ChevronLeft, Minus, Plus, Tag, Trash2, X } from 'lucide-react';
+import Link from 'next/link';
 
 interface Props {
   isOpen: boolean;
@@ -15,9 +16,10 @@ export default function ProductModal({ isOpen, onClose, product, flashDeal }: Pr
   const { addItem, updateQuantity, removeItem, getItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [autoCalc, setAutoCalc] = useState('');
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const inCart = getItem(product.id)?.quantity || 0;
-  const isFlash = flashDeal !== null;
+  const isFlash = !!flashDeal;
   const displayPrice = isFlash ? flashDeal.flash_price : (product.price > 0 ? product.price : product.mrp);
   const mrp = Number(product.mrp || 0);
   const hasDisc = isFlash ? mrp > displayPrice && displayPrice > 0 : (product.price > 0 && mrp > product.price);
@@ -47,17 +49,19 @@ export default function ProductModal({ isOpen, onClose, product, flashDeal }: Pr
     }
   };
 
+  useEffect(() => {
+    calcAuto();
+  }, [quantity]);
+
   const handleChange = (delta: number) => {
     const newQty = quantity + delta;
     if (newQty < 1) return;
     setQuantity(newQty);
-    calcAuto();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseInt(e.target.value) || 1;
     setQuantity(val);
-    calcAuto();
   };
 
   const handleSave = () => {
@@ -90,7 +94,8 @@ export default function ProductModal({ isOpen, onClose, product, flashDeal }: Pr
   return (
     <div className="fixed inset-0 z-50 flex items-end bg-black/50" onClick={onClose}>
       <div
-        className="w-full bg-white rounded-t-2xl shadow-xl max-h-[90vh] flex flex-col"
+        ref={modalRef}
+        className="w-full bg-white rounded-t-2xl shadow-xl max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 border-b">
@@ -107,7 +112,7 @@ export default function ProductModal({ isOpen, onClose, product, flashDeal }: Pr
               alt={product.name}
               className="w-full h-full object-contain p-4"
             />
-            {(flashDeal && !oos) && (
+            {isFlash && !oos && (
               <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
                 ⚡ FLASH
               </div>
@@ -126,6 +131,7 @@ export default function ProductModal({ isOpen, onClose, product, flashDeal }: Pr
               : secondaryUnit}
           </p>
 
+          {/* Tier Pricing */}
           {product.tiers?.length > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-4">
               <div className="font-bold text-amber-800 mb-2 flex items-center gap-2">

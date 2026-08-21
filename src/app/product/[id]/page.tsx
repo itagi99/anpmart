@@ -11,7 +11,7 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-async function getProduct(id: string): Promise<Product | null> {
+async function getProduct(id: string): Promise<any | null> {
   const rows = await dbQuery(`
     SELECT p.*, u1.name AS unit_name, u2.name AS secondary_unit
     FROM products p
@@ -35,11 +35,22 @@ async function getFlashDeal(id: string): Promise<any | null> {
   return rows[0] || null;
 }
 
+async function getTiers(id: string): Promise<any[]> {
+  const tiers = await dbQuery(`
+    SELECT min_quantity as min_qty, discount_type as type, discount_value as value
+    FROM product_tier_pricing
+    WHERE product_id = ?
+    ORDER BY min_quantity ASC
+  `, [id]);
+  return tiers;
+}
+
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [product, flashDeal] = await Promise.all([
+  const [product, flashDeal, tiers] = await Promise.all([
     getProduct(id),
     getFlashDeal(id),
+    getTiers(id),
   ]);
 
   if (!product) notFound();
@@ -58,7 +69,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <body className="min-h-screen bg-gray-50 pb-20 font-mulish">
         <Header />
         <main className="container-fluid p-0">
-          <ProductDetail product={product} flashDeal={flashDeal} />
+          <ProductDetail product={{ ...product, tiers }} flashDeal={flashDeal} />
         </main>
         <BottomNav />
       </body>
