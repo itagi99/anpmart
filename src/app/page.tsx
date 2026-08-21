@@ -6,9 +6,9 @@ import BottomNav from '@/components/BottomNav';
 import CategoryScroll from '@/components/CategoryScroll';
 import BannerCarousel from '@/components/BannerCarousel';
 import FlashDealsTicker from '@/components/FlashDealsTicker';
-import ProductSection from '@/components/ProductSection';
+import ProductTabs from '@/components/ProductTabs';
 import ProductCard from '@/components/ProductCard';
-import { ShoppingCart, Flame, Trophy, Star, ShoppingBag } from 'lucide-react';
+import { Flame, Trophy, Star, ShoppingBag } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,52 +83,16 @@ export default async function HomePage() {
 
           <CategoryScroll categories={categories} />
 
-          <ProductSection
-            title="⚡ Flash Deals"
-            icon={<Flame className="w-5 h-5 text-red-500" />}
-            products={products.filter(p => p.is_deal_of_day === 1)}
-            viewAllLink="/categories"
+          <ProductTabs
+            tabs={[
+              { key: 'all', label: 'All Products', products: allProducts },
+              { key: 'deal', label: '⚡ Flash Deals', products: products.filter(p => p.is_deal_of_day === 1) },
+              { key: 'day', label: '🌟 Deal of the Day', products: products.filter(p => p.is_deal_of_day === 1) },
+              { key: 'best', label: '🔥 Best Sellers', products: products.filter(p => p.is_best_seller === 1) },
+              { key: 'week', label: '📅 Product of the Week', products: products.filter(p => p.is_product_of_week === 1) },
+              { key: 'must', label: '✅ Must Buy', products: products.filter(p => p.is_must_buy === 1) },
+            ]}
           />
-
-          <ProductSection
-            title="🌟 Deal of the Day"
-            icon={<Star className="w-5 h-5 text-amber-500" />}
-            products={products.filter(p => p.is_deal_of_day === 1)}
-            viewAllLink="/categories"
-          />
-
-          <ProductSection
-            title="🔥 Best Sellers"
-            icon={<Trophy className="w-5 h-5 text-amber-500" />}
-            products={products.filter(p => p.is_best_seller === 1)}
-            viewAllLink="/categories"
-          />
-
-          <ProductSection
-            title="📅 Product of the Week"
-            icon={<Star className="w-5 h-5 text-blue-500" />}
-            products={products.filter(p => p.is_product_of_week === 1)}
-            viewAllLink="/categories"
-          />
-
-          <ProductSection
-            title="✅ Must Buy"
-            icon={<ShoppingBag className="w-5 h-5 text-emerald-500" />}
-            products={products.filter(p => p.is_must_buy === 1)}
-            viewAllLink="/categories"
-          />
-
-          <section className="px-4 mb-10">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-black text-gray-900">All Products</h2>
-              <a href="/categories" className="text-sm text-emerald-600 font-bold">See All</a>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {allProducts.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          </section>
         </main>
 
         <BottomNav />
